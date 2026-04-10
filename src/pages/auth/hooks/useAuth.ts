@@ -8,7 +8,12 @@ import { AuthServiceImpl } from "../services/authServiceImpl";
 import { SonnerToasterService } from "../../../shared/services/SonnerToasterService";
 import { LoginUseCase } from "../application/use-cases/login.usecase";
 import { SignupUseCase } from "../application/use-cases/signup.usecase";
-import { signupSchema, loginSchema, type SignupFormData, type LoginFormData } from "../types/auth.schema";
+import {
+  signupSchema,
+  loginSchema,
+  type SignupFormData,
+  type LoginFormData,
+} from "../types/auth.schema";
 
 /**
  * useAuth Hook

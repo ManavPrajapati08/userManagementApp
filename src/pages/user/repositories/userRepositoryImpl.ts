@@ -47,7 +47,7 @@ export class UserRepositoryImpl implements IUserRepository {
   async isEmailTaken(email: string, excludeId?: string): Promise<boolean> {
     const q = query(
       collection(db, this.collectionName),
-      where("email", "==", email.trim())
+      where("email", "==", email.trim()),
     );
     const snapshot = await getDocs(q);
 
@@ -60,7 +60,7 @@ export class UserRepositoryImpl implements IUserRepository {
   async isMobileTaken(mobile: string, excludeId?: string): Promise<boolean> {
     const q = query(
       collection(db, this.collectionName),
-      where("mobile", "==", mobile.trim())
+      where("mobile", "==", mobile.trim()),
     );
     const snapshot = await getDocs(q);
 

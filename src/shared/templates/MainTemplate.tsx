@@ -23,7 +23,7 @@ const MainTemplate = ({ children }: MainTemplateProps) => {
         <Header onMenuClick={toggleSidebar} />
         
         <main className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
-          <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
             {children}
           </div>
         </main>

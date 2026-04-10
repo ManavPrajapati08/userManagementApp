@@ -17,7 +17,7 @@ const Users = () => {
 
   return (
     <MainTemplate>
-      <UserManagementTemplate 
+      <UserManagementTemplate
         users={users}
         onAddUser={handleAddUser}
         onEditUser={handleEditUser}

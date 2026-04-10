@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   return (
     <div 
       className={`
-        fixed inset-y-0 left-0 w-64 lg:static lg:block h-full glass-dark border-r border-slate-800 flex flex-col z-[50] transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 w-64 lg:static lg:flex h-full glass-dark border-r border-slate-800 flex flex-col z-[50] transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}
     >
