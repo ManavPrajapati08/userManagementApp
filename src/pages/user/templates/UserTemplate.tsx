@@ -4,6 +4,7 @@ import type { UserType } from "../types/UserType";
 import Typography from "../../../shared/components/atoms/Typography";
 import UserFormModal from "../components/UserFormModal";
 import ConfirmDialog from "../../../shared/components/molecules/ConfirmDialog";
+import { Outlet } from "react-router-dom";
 
 interface UserManagementTemplateProps {
   users: UserType[];
@@ -64,6 +65,9 @@ const UserManagementTemplate = ({
         confirmText="Delete User"
         variant="danger"
       />
+
+      {/* Renders nested routes like /users/:id (Edit Modal) */}
+      <Outlet />
     </div>
   );
 };

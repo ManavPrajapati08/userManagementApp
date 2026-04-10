@@ -1,122 +1,111 @@
-import { useState } from "react";
-import { auth } from "../../firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-
 import Input from "../../shared/components/atoms/Input";
 import Button from "../../shared/components/atoms/Button";
 import AuthTemplate from "./templates/AuthTemplate";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-
-type FormDataType = {
-  name: string;
-  email: string;
-  password: string;
-  age: string;
-};
+import { useAuth } from "./hooks/useAuth";
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const {
+    isLogin,
+    toggleAuthMode,
+    loginForm,
+    signupForm,
+    handleLoginSubmit,
+    handleSignupSubmit,
+  } = useAuth();
 
-  const [formData, setFormData] = useState<FormDataType>({
-    name: "",
-    email: "",
-    password: "",
-    age: "",
-  });
+  const {
+    register: loginRegister,
+    handleSubmit: handleLogin,
+    formState: { errors: loginErrors, isSubmitting: isLoggingIn },
+  } = loginForm;
 
-  const navigate = useNavigate();
+  const {
+    register: signupRegister,
+    handleSubmit: handleSignup,
+    formState: { errors: signupErrors, isSubmitting: isSigningUp },
+  } = signupForm;
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  // --- Render Functions ---
 
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const renderSignupFields = () => (
+    <>
+      <Input
+        label="FullName"
+        placeholder="John Doe"
+        error={signupErrors.name?.message}
+        {...signupRegister("name")}
+      />
+    </>
+  );
 
-  const handleSubmit = async () => {
-    try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(
-          auth,
-          formData.email,
-          formData.password,
-        );
+  const renderLoginForm = () => (
+    <>
+      <Input
+        label="Email Address"
+        type="email"
+        placeholder="name@company.com"
+        error={loginErrors.email?.message}
+        {...loginRegister("email")}
+      />
+      <Input
+        label="Password"
+        type="password"
+        placeholder="••••••••"
+        error={loginErrors.password?.message}
+        {...loginRegister("password")}
+      />
 
-        toast.success("Login Successful ✅");
-        navigate("/");
-      } else {
-        await createUserWithEmailAndPassword(
-          auth,
-          formData.email,
-          formData.password,
-        );
-        toast.success("Signup Successful ✅");
-        navigate("/");
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred");
-      }
-    }
-  };
+      <Button
+        text="Sign In"
+        onClick={handleLogin(handleLoginSubmit)}
+        className="w-full py-3 mt-2 text-base font-semibold"
+        isLoading={isLoggingIn}
+      />
+    </>
+  );
+
+  const renderSignupForm = () => (
+    <>
+      {renderSignupFields()}
+      <Input
+        label="Email Address"
+        type="email"
+        placeholder="name@company.com"
+        error={signupErrors.email?.message}
+        {...signupRegister("email")}
+      />
+      <Input
+        label="Password"
+        type="password"
+        placeholder="••••••••"
+        error={signupErrors.password?.message}
+        {...signupRegister("password")}
+      />
+
+      <Button
+        text="Create Account"
+        onClick={handleSignup(handleSignupSubmit)}
+        className="w-full py-3 mt-2 text-base font-semibold"
+        isLoading={isSigningUp}
+      />
+    </>
+  );
 
   return (
     <AuthTemplate
       title={isLogin ? "Welcome Back" : "Join the Community"}
-      subtitle={isLogin ? "Please enter your details to sign in" : "Start your journey with us today"}
+      subtitle={
+        isLogin ? "Sign in to your account" : "Start your journey today"
+      }
       isLogin={isLogin}
-      toggleText={isLogin ? "Don't have an account?" : "Already have an account?"}
+      toggleText={
+        isLogin ? "Don't have an account?" : "Already have an account?"
+      }
       toggleActionText={isLogin ? "Sign Up" : "Sign In"}
-      onToggle={() => setIsLogin(!isLogin)}
+      onToggle={toggleAuthMode}
     >
       <div className="flex flex-col gap-5">
-        {!isLogin && (
-          <>
-            <Input
-              label="FullName"
-              type="text"
-              name="name"
-              placeholder="John Doe"
-              onChange={handleChange}
-            />
-            <Input
-              label="Age"
-              type="number"
-              name="age"
-              placeholder="25"
-              onChange={handleChange}
-            />
-          </>
-        )}
-
-        <Input
-          label="Email Address"
-          type="email"
-          name="email"
-          placeholder="name@company.com"
-          onChange={handleChange}
-        />
-        <Input
-          label="Password"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          onChange={handleChange}
-        />
-
-        <Button
-          text={isLogin ? "Sign In" : "Create Account"}
-          onClick={handleSubmit}
-          className="w-full py-3 mt-2 text-base font-semibold"
-        />
+        {isLogin ? renderLoginForm() : renderSignupForm()}
       </div>
     </AuthTemplate>
   );

@@ -1,36 +1,31 @@
-import { Users, UserCheck, UserPlus, Activity } from "lucide-react";
+import { Users, Activity } from "lucide-react";
 import StatCard from "./StatCard";
+import { useAppSelector } from "../../../store/hooks";
 
+/**
+ * StatsGrid Component
+ * Displays key metrics. Refactored to show real data from Redux.
+ */
 const StatsGrid = () => {
+  const { users } = useAppSelector((state) => state.user);
+
   const stats = [
     {
       label: "Total Users",
-      value: "1,284",
-      change: "+12.5%",
+      value: users.length.toString(),
+      change: users.length > 0 ? "+100%" : "0%", // Dynamic logic could be added for real change
       icon: Users,
     },
     {
-      label: "Active Now",
-      value: "432",
-      change: "+3.2%",
+      label: "Active Users",
+      value: users.length.toString(), // For now, we'll treat all as active or filterable
+      change: "Stable",
       icon: Activity,
-    },
-    {
-      label: "New Signups",
-      value: "54",
-      change: "+18.1%",
-      icon: UserPlus,
-    },
-    {
-      label: "Verified",
-      value: "92%",
-      change: "+2.4%",
-      icon: UserCheck,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl">
       {stats.map((stat, i) => (
         <StatCard key={i} {...stat} />
       ))}

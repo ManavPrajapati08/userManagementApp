@@ -1,10 +1,15 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, X } from "lucide-react";
 import { auth } from "../../../firebase";
 import { signOut } from "firebase/auth";
 import Typography from "../atoms/Typography";
 
-const Sidebar = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: Users, label: "Users", path: "/users" },
@@ -12,17 +17,41 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
+    onClose();
   };
 
   return (
-    <div className="w-64 h-full glass-dark border-r border-slate-800 flex flex-col">
-      <nav className="flex-1 px-4 py-8">
+    <div 
+      className={`
+        fixed inset-y-0 left-0 w-64 lg:static lg:block h-full glass-dark border-r border-slate-800 flex flex-col z-[50] transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+      `}
+    >
+      <div className="p-6 border-b border-slate-800/50 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 font-bold">
+            U
+          </div>
+          <Typography variant="h4" className="mb-0 text-lg">
+            UserPanel
+          </Typography>
+        </div>
+        <button 
+          onClick={onClose}
+          className="lg:hidden p-1 hover:bg-slate-800 rounded-lg text-slate-500"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      <nav className="flex-1 px-4 py-4 overflow-y-auto custom-scrollbar">
         <ul className="space-y-1">
           {menuItems.map((item) => (
             <li key={item.path}>
               <NavLink
                 to={item.path}
                 end={item.path === "/"}
+                onClick={onClose}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
                     isActive

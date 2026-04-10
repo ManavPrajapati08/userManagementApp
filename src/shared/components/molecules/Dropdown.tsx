@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import Typography from "../atoms/Typography";
 
 interface DropdownProps {
   label: string;
@@ -7,9 +8,10 @@ interface DropdownProps {
   options: string[];
   onChange: (value: string) => void;
   placeholder?: string;
+  error?: string;
 }
 
-const Dropdown = ({ label, value, options, onChange, placeholder = "Select option" }: DropdownProps) => {
+const Dropdown = ({ label, value, options, onChange, placeholder = "Select option", error }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -19,7 +21,8 @@ const Dropdown = ({ label, value, options, onChange, placeholder = "Select optio
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          w-full bg-slate-800/50 text-white px-4 py-2.5 rounded-xl border border-slate-700 
+          w-full bg-slate-800/50 text-white px-4 py-2.5 rounded-xl border 
+          ${error ? 'border-rose-500 ring-1 ring-rose-500/20' : 'border-slate-700'}
           flex items-center justify-between transition-all outline-none
           ${isOpen ? 'ring-2 ring-indigo-500/50 border-indigo-500 bg-slate-800' : 'hover:bg-slate-800/80'}
         `}
@@ -50,6 +53,12 @@ const Dropdown = ({ label, value, options, onChange, placeholder = "Select optio
             </button>
           ))}
         </div>
+      )}
+
+      {error && (
+        <Typography variant="small" className="text-rose-500 font-medium ml-1">
+          {error}
+        </Typography>
       )}
     </div>
   );

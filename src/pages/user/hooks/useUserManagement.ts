@@ -1,13 +1,33 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../../../context/UserContext";
-import toast from "react-hot-toast";
+
+// 1. Import Redux Selector Hook
+import { useAppSelector } from "../../../store/hooks";
+
+// 2. Import Architecture Layers
+import { UserRepositoryImpl } from "../repositories/userRepositoryImpl";
+import { SonnerToasterService } from "../../../shared/services/SonnerToasterService";
+import { CreateUserUseCase } from "../application/use-cases/createUser.usecase";
+import { UpdateUserUseCase } from "../application/use-cases/updateUser.usecase";
+import { DeleteUserUseCase } from "../application/use-cases/deleteUser.usecase";
 
 export const useUserManagement = () => {
   const navigate = useNavigate();
-  const { users, addUser, updateUser, deleteUser, loading } = useUser();
+  const { users, loading } = useAppSelector((state) => state.user);
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+
+  const services = useMemo(() => {
+    const userRepository = new UserRepositoryImpl();
+    const toasterService = new SonnerToasterService();
+
+    return {
+      createUser: new CreateUserUseCase(userRepository, toasterService),
+      updateUser: new UpdateUserUseCase(userRepository, toasterService),
+      deleteUser: new DeleteUserUseCase(userRepository, toasterService),
+    };
+  }, []);
 
   const handleAddUser = () => {
     setShowAddForm(true);
@@ -31,10 +51,10 @@ export const useUserManagement = () => {
     setDeletingUserId(null);
 
     try {
-      await deleteUser(id);
-      toast.success("User deleted successfully");
+      await services.deleteUser.execute(id);
     } catch (error) {
-      toast.error("Failed to delete user");
+      // Error is already handled inside the UseCase by the ToasterService
+      console.error("Delete failed", error);
     }
   };
 
@@ -47,15 +67,13 @@ export const useUserManagement = () => {
 
     try {
       if (id) {
-        await updateUser(id, data);
-        toast.success("User updated successfully");
+        await services.updateUser.execute(id, data);
       } else {
-        await addUser(data);
-        toast.success("User added successfully");
+        await services.createUser.execute(data);
       }
       return true;
     } catch (error) {
-      toast.error(id ? "Failed to update user" : "Failed to add user");
+      // Error is already handled inside the UseCase by the ToasterService
       return false;
     }
   };

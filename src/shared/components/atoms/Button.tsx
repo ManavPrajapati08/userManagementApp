@@ -5,6 +5,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "danger";
   children?: ReactNode;
   size?: "sm" | "md" | "lg";
+  isLoading?: boolean;
 }
 
 const Button = ({
@@ -14,6 +15,7 @@ const Button = ({
   variant = "primary",
   size = "md",
   className = "",
+  isLoading,
   ...props
 }: ButtonProps) => {
   const variants = {
@@ -33,15 +35,24 @@ const Button = ({
   return (
     <button
       onClick={onClick}
+      disabled={isLoading || props.disabled}
       className={`
         rounded-lg font-medium text-white transition-all 
         duration-200 active:scale-95 shadow-lg 
         disabled:opacity-50 disabled:cursor-not-allowed
+        flex items-center justify-center gap-2
         ${variants[variant]} ${sizes[size]} ${className}
       `}
       {...props}
     >
-      {text || children}
+      {isLoading ? (
+        <>
+          <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <span>Processing...</span>
+        </>
+      ) : (
+        text || children
+      )}
     </button>
   );
 };
